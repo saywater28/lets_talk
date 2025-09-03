@@ -1,0 +1,50 @@
+[versions]
+agp = "8.11.1"
+androidReactions = "1.6"
+circleimageview = "3.1.0"
+circularstatusview = "V1.0.3"
+compiler = "4.16.0"
+firebaseBom = "33.16.0"
+firebaseDatabase = "21.0.0"
+firebaseStorage = "21.0.2"
+glide = "4.16.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.1"
+material = "1.12.0"
+activity = "1.10.1"
+constraintlayout = "2.2.1"
+cardview = "1.0.0"
+otpview = "3.2.0"
+recyclerview = "1.4.0"
+shimmerrecyclerview = "v1.3"
+storyview = "1.0.2-alpha"
+
+[libraries]
+android-reactions = { module = "com.github.pgreze:android-reactions", version.ref = "androidReactions" }
+circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
+circularstatusview = { module = "com.github.3llomi:CircularStatusView", version.ref = "circularstatusview" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-database = { module = "com.google.firebase:firebase-database", version.ref = "firebaseDatabase" }
+firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
+otpview = { module = "com.github.mukeshsolanki.android-otpview-pinview:otpview", version.ref = "otpview" }
+recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+shimmerrecyclerview = { module = "com.github.sharish:ShimmerRecyclerView", version.ref = "shimmerrecyclerview" }
+storyview = { module = "com.github.OMARIHAMZA:StoryView", version.ref = "storyview" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+

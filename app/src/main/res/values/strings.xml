@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">LET\'S TALK</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="continuee">Continue</string>
+    <string name="verify_your_phone_number">Enter your Number or Email</string>
+    <string name="app_will_send_sms_to_verify_the_phone_number">App will send SMS to verify the phone number</string>
+    <string name="enter_the_otp_code_to_verify_your_phone_number">Enter the OTP code to verify your phone number</string>
+    <string name="verify_91_7869857398">Verify +917869857398</string>
+    <string name="type_your_name">Type your name</string>
+    <string name="please_set_your_name_and_an_optional_profile_image">Please set your name and a profile image.</string>
+    <string name="profile_info">Profile Info</string>
+    <string name="setup_profile">SETUP PROFILE</string>
+</resources>
