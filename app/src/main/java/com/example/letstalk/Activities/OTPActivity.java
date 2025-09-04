@@ -44,7 +44,7 @@ public class OTPActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityOtpactivityBinding.inflate(getLayoutInflater());
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
         auth = FirebaseAuth.getInstance();
 

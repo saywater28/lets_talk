@@ -14,6 +14,9 @@
         android:theme="@style/Theme.LETSTALK"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Activities.ContactDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.SettingsActivity"
             android:exported="false" />
         <activity

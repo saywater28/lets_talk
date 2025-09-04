@@ -3,7 +3,6 @@ package com.example.letstalk.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -15,11 +14,15 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.letstalk.R;
 import com.example.letstalk.databinding.ActivityPhoneBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class PhoneActivity extends AppCompatActivity {
 
     ActivityPhoneBinding binding;
     FirebaseAuth auth;
+    DatabaseReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +32,11 @@ public class PhoneActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
+        usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-        if(auth.getCurrentUser() != null){
-            Intent intent = new Intent(PhoneActivity.this, SetupProfileActivity.class);
-            startActivity(intent);
-            finish();
+        // If already logged in, check if profile exists
+        if (auth.getCurrentUser() != null) {
+            checkUserProfile(auth.getCurrentUser().getUid());
         }
 
         binding.phoneBox.requestFocus();
@@ -64,15 +67,14 @@ public class PhoneActivity extends AppCompatActivity {
             auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                            goToMain();
+                            checkUserProfile(auth.getCurrentUser().getUid());
                         } else {
                             // If login fails, try creating a new account
                             auth.createUserWithEmailAndPassword(email, password)
                                     .addOnCompleteListener(signupTask -> {
                                         if (signupTask.isSuccessful()) {
                                             Toast.makeText(this, "Signup successful", Toast.LENGTH_SHORT).show();
-                                            goToMain();
+                                            goToSetupProfile();
                                         } else {
                                             Toast.makeText(this, "Auth failed: " + signupTask.getException().getMessage(), Toast.LENGTH_LONG).show();
                                         }
@@ -88,8 +90,27 @@ public class PhoneActivity extends AppCompatActivity {
         });
     }
 
-    private void goToMain() {
+    // ✅ Check if user profile exists in Firebase
+    private void checkUserProfile(String uid) {
+        usersRef.child(uid).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                // Profile already exists → go to MainActivity
+                goToMain();
+            } else {
+                // First-time login → go to SetupProfileActivity
+                goToSetupProfile();
+            }
+        });
+    }
+
+    private void goToSetupProfile() {
         Intent intent = new Intent(PhoneActivity.this, SetupProfileActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void goToMain() {
+        Intent intent = new Intent(PhoneActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }

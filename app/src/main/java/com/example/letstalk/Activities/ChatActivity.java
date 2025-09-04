@@ -1,15 +1,16 @@
 package com.example.letstalk.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.letstalk.Adapters.MessagesAdapter;
@@ -26,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -38,15 +40,36 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        ImageView backArrow = findViewById(R.id.backArrow);
+        TextView personName = findViewById(R.id.personName);
+        Button viewContactBtn = findViewById(R.id.viewContactBtn);
+
+        String uid = getIntent().getStringExtra("userUid");
+        String profileImage = getIntent().getStringExtra("profileImage");
         String name = getIntent().getStringExtra("name");
+        String email = getIntent().getStringExtra("email");
+        String phone = getIntent().getStringExtra("phone");
         String senderUid = FirebaseAuth.getInstance().getUid();
         String receiverUid = getIntent().getStringExtra("uid");
 
-        Log.d("CHAT_INIT", "SenderRoom: " + senderRoom + ", ReceiverRoom: " + receiverRoom);
+        if (name != null) {
+            personName.setText(name);
+        }
+
+        backArrow.setOnClickListener(v -> onBackPressed());
+
+        // 🔹 "View Contact" button functionality
+        viewContactBtn.setOnClickListener(v -> {
+            Intent profileIntent = new Intent(ChatActivity.this, ContactDetailsActivity.class);
+            profileIntent.putExtra("name", name);
+            profileIntent.putExtra("email", email);
+            profileIntent.putExtra("phone", phone);
+            profileIntent.putExtra("profileImage", profileImage);
+            startActivity(profileIntent);
+        });
 
         senderRoom = senderUid + receiverUid;
         receiverRoom = receiverUid + senderUid;
@@ -64,59 +87,19 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         messages.clear();
-                        for (DataSnapshot snapshot1: snapshot.getChildren()){
+                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                             Message message = snapshot1.getValue(Message.class);
                             message.setMessageId(snapshot1.getKey());
                             messages.add(message);
                         }
-
                         adapter.notifyDataSetChanged();
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        
+
                     }
                 });
-
-//        binding.sendBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String messageTxt = binding.msgBox.getText().toString();
-//
-//                Date date = new Date();
-//                Message message = new Message(messageTxt, senderUid, date.getTime(), detectedLanguage, translatedMessage);
-//                binding.msgBox.setText("");
-//
-//                String randomKey = database.getReference().push().getKey();
-//                HashMap<String, Object> lastMsgObj = new HashMap<>();
-//                lastMsgObj.put("lastMsg", message.getMessage());
-//                lastMsgObj.put("lastMsgTime", date.getTime());
-//                database.getReference().child("chats").child(senderRoom).updateChildren(lastMsgObj);
-//                database.getReference().child("chats").child(receiverRoom).updateChildren(lastMsgObj);
-//
-//
-//                database.getReference().child("chats")
-//                    .child(senderRoom)
-//                    .child("messages")
-//                    .child(randomKey)
-//                    .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//                            database.getReference().child("chats")
-//                                    .child(receiverRoom)
-//                                    .child("messages")
-//                                    .child(randomKey)
-//                                    .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                @Override
-//                                public void onSuccess(Void aVoid) {
-//                                }
-//                            });
-//
-//                        }
-//                    });
-//            }
-//        });
 
         binding.sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,7 +107,6 @@ public class ChatActivity extends AppCompatActivity {
                 String messageTxt = binding.msgBox.getText().toString();
                 if (messageTxt.isEmpty()) return;
 
-                String senderUid = FirebaseAuth.getInstance().getUid();
                 Date date = new Date();
                 Message message = new Message(messageTxt, senderUid, date.getTime());
                 binding.msgBox.setText("");
@@ -136,47 +118,36 @@ public class ChatActivity extends AppCompatActivity {
                 database.getReference().child("chats").child(senderRoom).updateChildren(lastMsgObj);
                 database.getReference().child("chats").child(receiverRoom).updateChildren(lastMsgObj);
 
-
                 database.getReference().child("chats")
-                    .child(senderRoom)
-                    .child("messages")
-                    .child(randomKey)
-                    .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            database.getReference().child("chats")
-                                    .child(receiverRoom)
-                                    .child("messages")
-                                    .child(randomKey)
-                                    .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                }
-                            });
-
-                        }
-                    });
+                        .child(senderRoom)
+                        .child("messages")
+                        .child(randomKey)
+                        .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                database.getReference().child("chats")
+                                        .child(receiverRoom)
+                                        .child("messages")
+                                        .child(randomKey)
+                                        .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {}
+                                        });
+                            }
+                        });
             }
         });
 
+        // ActionBar setup with back button
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(name);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-//        getSupportActionBar().setTitle(name);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         finish();
-        return super.onSupportNavigateUp();
+        return true;
     }
 }
