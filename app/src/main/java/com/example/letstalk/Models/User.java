@@ -6,18 +6,21 @@ public class User {
     private String phoneNumber;
     private String email;
     private String profileImage;
+    private String language;
+    private String preferredLanguage;
 
     // Empty constructor required for Firebase
     public User() {
     }
 
     // Constructor with all fields
-    public User(String uid, String name, String phoneNumber, String email, String profileImage) {
+    public User(String uid, String name, String phoneNumber, String email, String profileImage, String language) {
         this.uid = uid;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.profileImage = profileImage;
+        this.language = language;
     }
 
     // Getters and Setters
@@ -60,4 +63,16 @@ public class User {
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
+
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
+    }
+
+
 }

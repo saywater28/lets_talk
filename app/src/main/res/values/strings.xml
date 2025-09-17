@@ -10,4 +10,19 @@
     <string name="please_set_your_name_and_an_optional_profile_image">Please set your name and a profile image.</string>
     <string name="profile_info">Profile Info</string>
     <string name="setup_profile">SETUP PROFILE</string>
+
+    <string-array name="languages">
+        <item>English</item>
+        <item>हिन्दी</item>
+        <item>Español</item>
+        <item>Français</item>
+    </string-array>
+
+    <string-array name="language_codes">
+        <item>en</item>
+        <item>hi</item>
+        <item>es</item>
+        <item>fr</item>
+    </string-array>
+
 </resources>

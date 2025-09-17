@@ -1,5 +1,7 @@
 package com.example.letstalk.Models;
 
+import java.util.HashMap;
+
 public class Message {
     private String messageId, message, senderId;
     private long timestamp;

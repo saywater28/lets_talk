@@ -32,6 +32,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
+        <!-- Send Language Spinner -->
+
         <TextView
             android:id="@+id/personName"
             android:layout_width="0dp"
@@ -40,28 +42,25 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="30dp"
             app:layout_constraintStart_toEndOf="@id/backArrow"
-            app:layout_constraintEnd_toStartOf="@id/viewContactBtn"
+            app:layout_constraintEnd_toStartOf="@+id/toolbar"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:singleLine="true" />
 
-        <Button
-            android:id="@+id/viewContactBtn"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="View"
-            android:backgroundTint="@color/greenDark"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:paddingHorizontal="6dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="?attr/actionBarSize"
             android:layout_marginTop="30dp"
+            app:layout_constraintStart_toEndOf="@id/personName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:menu="@menu/chat_menu"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- RecyclerView for messages -->
@@ -104,6 +103,8 @@
                 android:gravity="center_vertical"
                 android:hint="Type a message..."
                 android:inputType="text"
+                android:singleLine="true"
+                android:imeOptions="actionSend"
                 android:padding="2dp"
                 android:textSize="18sp" />
 

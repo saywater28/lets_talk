@@ -72,6 +72,15 @@
                 android:hint="@string/type_your_name"
                 android:padding="15dp" />
 
+            <Spinner
+                android:id="@+id/langSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:layout_marginTop="20dp"
+                android:entries="@array/languages"
+                android:spinnerMode="dropdown"/>
+
+
             <Button
                 android:id="@+id/continueBtn"
                 android:layout_width="match_parent"

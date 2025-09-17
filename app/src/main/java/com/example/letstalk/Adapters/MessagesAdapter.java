@@ -33,7 +33,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
     String senderRoom;
     String receiverRoom;
 
-    public MessagesAdapter(Context context, ArrayList<Message> messages, String senderRoom, String receiverRoom){
+    public MessagesAdapter(Context context, ArrayList<Message> messages, ArrayList<String> messageKeys, String senderRoom, String receiverRoom){
         this.context = context;
         this.messages = messages;
         this.senderRoom = senderRoom;
