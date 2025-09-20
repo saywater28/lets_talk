@@ -1,17 +1,14 @@
 package com.example.letstalk.Adapters;
 
 import android.content.Context;
-import com.example.letstalk.Models.Message;
-
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.letstalk.Models.Message;
 import com.example.letstalk.R;
 import com.example.letstalk.databinding.ItemReceiveBinding;
 import com.example.letstalk.databinding.ItemSendBinding;
@@ -24,14 +21,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class MessagesAdapter extends RecyclerView.Adapter {
-    Context context;
-    ArrayList<Message> messages;
+public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private final Context context;
+    private final ArrayList<Message> messages;
 
-    final int ITEM_SENT = 1;
-    final int ITEM_RECEIVE = 2;
-    String senderRoom;
-    String receiverRoom;
+    private final int ITEM_SENT = 1;
+    private final int ITEM_RECEIVE = 2;
+    private final String senderRoom;
+    private final String receiverRoom;
+
+    // 👇 keep track of preferred language
+    private String preferredLang = "en";
+
+    public void setPreferredLang(String lang) {
+        this.preferredLang = lang;
+    }
 
     public MessagesAdapter(Context context, ArrayList<Message> messages, ArrayList<String> messageKeys, String senderRoom, String receiverRoom){
         this.context = context;
@@ -66,6 +70,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Message message = messages.get(position);
 
+        // Reaction setup
         int[] reactions = new int[]{
                 R.drawable.ic_fb_like,
                 R.drawable.ic_fb_love,
@@ -75,49 +80,20 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                 R.drawable.ic_fb_angry
         };
 
-
-
         ReactionsConfig config = new ReactionsConfigBuilder(context)
                 .withReactions(reactions)
                 .build();
 
         ReactionPopup popup = new ReactionPopup(context, config, (pos) -> {
-            if (holder.getClass() == SentViewHolder.class){
-                SentViewHolder viewHolder = (SentViewHolder)holder;
-                viewHolder.binding.feeling.setImageResource(reactions[pos]);
-                viewHolder.binding.feeling.setVisibility(View.VISIBLE);
-            } else {
-                ReceiveViewHolder viewHolder = (ReceiveViewHolder) holder;
-                viewHolder.binding.feeling.setImageResource(reactions[pos]);
-                viewHolder.binding.feeling.setVisibility(View.VISIBLE);
+            if (holder instanceof SentViewHolder) {
+                ((SentViewHolder) holder).binding.feeling.setImageResource(reactions[pos]);
+                ((SentViewHolder) holder).binding.feeling.setVisibility(View.VISIBLE);
+            } else if (holder instanceof ReceiveViewHolder) {
+                ((ReceiveViewHolder) holder).binding.feeling.setImageResource(reactions[pos]);
+                ((ReceiveViewHolder) holder).binding.feeling.setVisibility(View.VISIBLE);
             }
 
-//            if (holder.getClass() == SentViewHolder.class) {
-//                SentViewHolder viewHolder = (SentViewHolder)holder;
-//                viewHolder.binding.message.setText(message.getMessage());
-
-//                viewHolder.binding.message.setOnTouchListener(new View.OnTouchListener() {
-//                    @Override
-//                    public boolean onTouch(View view, MotionEvent motionEvent) {
-//                        popup.onTouch(view, motionEvent);
-//                        return false;
-//                    }
-//                });
-//            } else {
-//                ReceiveViewHolder viewHolder = (ReceiveViewHolder) holder;
-//                viewHolder.binding.message.setText(message.getMessage());
-//
-//                viewHolder.binding.message.setOnTouchListener(new View.OnTouchListener() {
-//                    @Override
-//                    public boolean onTouch(View view, MotionEvent motionEvent) {
-//                        popup.onTouch(view, motionEvent);
-//                        return false;
-//                    }
-//                });
-//            }
-
             message.setFeeling(pos);
-            Log.d("ChatDebug", "senderRoom: $senderRoom, receiverRoom: $receiverRoom, messageId: $messageId");
 
             if (senderRoom != null && receiverRoom != null && message.getMessageId() != null) {
                 FirebaseDatabase.getInstance().getReference()
@@ -133,51 +109,46 @@ public class MessagesAdapter extends RecyclerView.Adapter {
                         .child("messages")
                         .child(message.getMessageId())
                         .setValue(message);
-            } else {
-                Log.e("FIREBASE_PATH_ERROR", "senderRoom, receiverRoom or messageId is null");
             }
-
             return true;
         });
 
+        // 👇 always get dynamic displayMessage
+        String displayText = message.getDisplayMessage(preferredLang);
+        if (displayText == null || displayText.isEmpty()) {
+            displayText = message.getMessageText(); // fallback
+        }
 
-        if (holder.getClass() == SentViewHolder.class) {
-            SentViewHolder viewHolder = (SentViewHolder)holder;
-            viewHolder.binding.message.setText(message.getMessage());
+        if (holder instanceof SentViewHolder) {
+            SentViewHolder viewHolder = (SentViewHolder) holder;
+            viewHolder.binding.message.setText(displayText);
 
             if (message.getFeeling() >= 0) {
-//                message.setFeeling(reactions[(int) message.getFeeling()]);
                 viewHolder.binding.feeling.setImageResource(reactions[message.getFeeling()]);
                 viewHolder.binding.feeling.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.binding.feeling.setVisibility(View.GONE);
             }
 
-            viewHolder.binding.message.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent motionEvent) {
-                    popup.onTouch(v, motionEvent);
-                    return false;
-                }
+            viewHolder.binding.message.setOnTouchListener((v, motionEvent) -> {
+                popup.onTouch(v, motionEvent);
+                return false;
             });
-        } else {
+
+        } else if (holder instanceof ReceiveViewHolder) {
             ReceiveViewHolder viewHolder = (ReceiveViewHolder) holder;
-            viewHolder.binding.message.setText(message.getMessage());
+            viewHolder.binding.message.setText(displayText);
 
             if (message.getFeeling() >= 0) {
-//                message.setFeeling(reactions[(int) message.getFeeling()]);
                 viewHolder.binding.feeling.setImageResource(reactions[message.getFeeling()]);
                 viewHolder.binding.feeling.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.binding.feeling.setVisibility(View.GONE);
             }
 
-            viewHolder.binding.message.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent motionEvent) {
-                    popup.onTouch(v, motionEvent);
-                    return false;
-                }
+            viewHolder.binding.message.setOnTouchListener((v, motionEvent) -> {
+                popup.onTouch(v, motionEvent);
+                return false;
             });
         }
     }
@@ -187,9 +158,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         return messages.size();
     }
 
-    // 2 view holders for 2 different message types
-    public class SentViewHolder extends RecyclerView.ViewHolder {
-
+    public static class SentViewHolder extends RecyclerView.ViewHolder {
         ItemSendBinding binding;
         public SentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -197,12 +166,11 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public class ReceiveViewHolder extends RecyclerView.ViewHolder {
+    public static class ReceiveViewHolder extends RecyclerView.ViewHolder {
         ItemReceiveBinding binding;
         public ReceiveViewHolder(@NonNull View itemView) {
             super(itemView);
             binding = ItemReceiveBinding.bind(itemView);
         }
     }
-
 }

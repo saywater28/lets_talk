@@ -8,13 +8,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -74,18 +70,22 @@ public class MainActivity extends AppCompatActivity {
         usersAdapter = new UsersAdapter(this, filteredUsers);
         binding.recyclerView.setAdapter(usersAdapter);
 
-        database.getReference().child("users").child(FirebaseAuth.getInstance().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        user = snapshot.getValue(User.class);
-                    }
+        // ✅ Safe null check for UID
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            database.getReference().child("users").child(uid)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            user = snapshot.getValue(User.class);
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
+                        }
+                    });
+        }
 
         usersAdapter = new UsersAdapter(this, users);
         statusAdapter = new TopStatusAdapter(this, userStatuses);
@@ -104,10 +104,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 users.clear();
-                for(DataSnapshot snapshot1: snapshot.getChildren()){
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     User user = snapshot1.getValue(User.class);
-                    if (!user.getUid().equals(FirebaseAuth.getInstance().getUid()))
+                    if (user != null && user.getUid() != null &&
+                            !user.getUid().equals(FirebaseAuth.getInstance().getUid())) {
                         users.add(user);
+                    }
                 }
                 filteredUsers.clear();
                 filteredUsers.addAll(users);
@@ -124,9 +126,9 @@ public class MainActivity extends AppCompatActivity {
         database.getReference().child("stories").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
+                if (snapshot.exists()) {
                     userStatuses.clear();
-                    for(DataSnapshot storySnapshot : snapshot.getChildren()) {
+                    for (DataSnapshot storySnapshot : snapshot.getChildren()) {
                         UserStatus status = new UserStatus();
                         status.setName(storySnapshot.child("name").getValue(String.class));
                         status.setLastUpdated(storySnapshot.child("lastUpdated").getValue(Long.class));
@@ -134,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
                         ArrayList<Status> statuses = new ArrayList<>();
 
-                        for(DataSnapshot statusSnapshot: storySnapshot.child("statuses").getChildren()) {
+                        for (DataSnapshot statusSnapshot : storySnapshot.child("statuses").getChildren()) {
                             Status sampleStatus = statusSnapshot.getValue(Status.class);
                             statuses.add(sampleStatus);
                         }
@@ -191,8 +193,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data!= null){
-            if (data.getData() != null){
+        if (data != null) {
+            if (data.getData() != null) {
                 dialog.show();
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 Date date = new Date();
@@ -206,8 +208,10 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     UserStatus userStatus = new UserStatus();
-                                    userStatus.setName(user.getName());
-                                    userStatus.setProfileImage(user.getProfileImage());
+                                    if (user != null) {
+                                        userStatus.setName(user.getName());
+                                        userStatus.setProfileImage(user.getProfileImage());
+                                    }
                                     userStatus.setLastUpdated(date.getTime());
 
                                     HashMap<String, Object> obj = new HashMap<>();
@@ -219,17 +223,20 @@ public class MainActivity extends AppCompatActivity {
 
                                     Status status = new Status(imageUrl, userStatus.getLastUpdated());
 
-                                    database.getReference()
-                                                    .child("stories")
-                                                    .child(FirebaseAuth.getInstance().getUid())
-                                                    .updateChildren(obj);
+                                    String uid = FirebaseAuth.getInstance().getUid();
+                                    if (uid != null) {
+                                        database.getReference()
+                                                .child("stories")
+                                                .child(uid)
+                                                .updateChildren(obj);
 
-                                    database.getReference()
-                                            .child("stories")
-                                            .child(FirebaseAuth.getInstance().getUid())
-                                            .child("statuses")
-                                            .push()
-                                            .setValue(status);
+                                        database.getReference()
+                                                .child("stories")
+                                                .child(uid)
+                                                .child("statuses")
+                                                .push()
+                                                .setValue(status);
+                                    }
 
                                     dialog.dismiss();
                                 }
@@ -240,7 +247,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     // ------------------------------------------------------------------------------------- //
 
@@ -316,5 +322,4 @@ public class MainActivity extends AppCompatActivity {
         filteredUsers.addAll(temp);
         usersAdapter.notifyDataSetChanged();
     }
-
 }

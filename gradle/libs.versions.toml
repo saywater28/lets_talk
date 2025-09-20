@@ -5,6 +5,7 @@ circleimageview = "3.1.0"
 circularstatusview = "V1.0.3"
 compiler = "4.16.0"
 firebaseBom = "33.16.0"
+firebaseBomVersion = "33.3.0"
 firebaseDatabase = "21.0.0"
 firebaseStorage = "21.0.2"
 glide = "4.16.0"
@@ -20,6 +21,7 @@ otpview = "3.2.0"
 recyclerview = "1.4.0"
 shimmerrecyclerview = "v1.3"
 storyview = "1.0.2-alpha"
+translate = "17.0.3"
 
 [libraries]
 android-reactions = { module = "com.github.pgreze:android-reactions", version.ref = "androidReactions" }
@@ -29,9 +31,11 @@ compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compi
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-bom-v3330 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebase-database = { module = "com.google.firebase:firebase-database", version.ref = "firebaseDatabase" }
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -44,6 +48,7 @@ otpview = { module = "com.github.mukeshsolanki.android-otpview-pinview:otpview",
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 shimmerrecyclerview = { module = "com.github.sharish:ShimmerRecyclerView", version.ref = "shimmerrecyclerview" }
 storyview = { module = "com.github.OMARIHAMZA:StoryView", version.ref = "storyview" }
+translate = { module = "com.google.mlkit:translate", version.ref = "translate" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

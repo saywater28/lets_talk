@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -44,7 +43,6 @@ public class OTPActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityOtpactivityBinding.inflate(getLayoutInflater());
-//        EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
         auth = FirebaseAuth.getInstance();
 
@@ -63,9 +61,21 @@ public class OTPActivity extends AppCompatActivity {
         });
 
         String phoneNumber = getIntent().getStringExtra("phoneNumber");
+
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            // 🚨 No phone number → Skip OTP flow
+            dialog.dismiss();
+            Toast.makeText(this, "Logged in with email. Skipping OTP.", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(OTPActivity.this, SetupProfileActivity.class);
+            startActivity(intent);
+            finishAffinity();
+            return; // prevent crash
+        }
+
+        // Normal OTP Flow
         binding.phoneLabel.setText("Verify " + phoneNumber);
 
-        assert phoneNumber != null;
         PhoneAuthOptions options = PhoneAuthOptions.newBuilder(auth)
                 .setPhoneNumber(phoneNumber)
                 .setTimeout(60L, TimeUnit.SECONDS)
@@ -73,12 +83,13 @@ public class OTPActivity extends AppCompatActivity {
                 .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                     @Override
                     public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-
+                        // Auto-retrieval case
                     }
 
                     @Override
                     public void onVerificationFailed(@NonNull FirebaseException e) {
-
+                        Toast.makeText(OTPActivity.this, "Verification failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
                     }
 
                     @Override
@@ -86,8 +97,6 @@ public class OTPActivity extends AppCompatActivity {
                         super.onCodeSent(verifyId, forceResendingToken);
                         dialog.dismiss();
                         verificationId = verifyId;
-//                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                         binding.otpView.requestFocus();
 
                         new Handler().postDelayed(() -> {
@@ -106,7 +115,7 @@ public class OTPActivity extends AppCompatActivity {
                 auth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Intent intent = new Intent(OTPActivity.this, SetupProfileActivity.class);
                             startActivity(intent);
                             finishAffinity();
