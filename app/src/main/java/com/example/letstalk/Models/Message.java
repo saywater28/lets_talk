@@ -38,7 +38,6 @@ public class Message {
     public Map<String, String> getTranslations() { return translations; }
     public void setTranslations(Map<String, String> translations) { this.translations = translations; }
 
-    // 👇 Dynamic getter (not stored in Firebase)
     @Exclude
     public String getDisplayMessage(String preferredLang) {
         if (translations != null && translations.containsKey(preferredLang)) {
