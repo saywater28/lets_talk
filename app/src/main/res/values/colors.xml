@@ -26,6 +26,7 @@
     <color name="splash_bg_primary">#4C3A5A</color>
     <color name="splash_bg_accent">#6A547C</color>
     <color name="splash_overlay_pink">#EFB9B9</color>
+    <color name="splash_main">#7C799A</color>
 
     <color name="splash_title">#FFFFFF</color>
     <color name="splash_subtitle">#E3D7F5</color>

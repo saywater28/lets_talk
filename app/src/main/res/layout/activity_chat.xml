@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg"
+    android:background="@drawable/chatbg"
     tools:context=".Activities.ChatActivity">
 
     <!-- Top Bar -->
@@ -14,32 +14,28 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="90dp"
-        android:background="@color/offwhite"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Back Arrow -->
         <ImageView
             android:id="@+id/backArrow"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:padding="4dp"
-            app:srcCompat="@drawable/back"
+            app:srcCompat="@drawable/left_white"
             android:contentDescription="Back"
             android:layout_marginTop="30dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Send Language Spinner -->
-
         <TextView
             android:id="@+id/personName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Person Name"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginStart="20dp"
@@ -56,29 +52,28 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_marginTop="30dp"
             app:menu="@menu/chat_menu"
+            app:navigationIconTint="@android:color/white"
             app:layout_constraintStart_toEndOf="@id/personName"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- RecyclerView for messages -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintTop_toBottomOf="@id/topBar"
         app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Message input area -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_marginStart="2dp"
+        android:layout_marginStart="14dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:cardCornerRadius="30dp"
@@ -90,13 +85,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="@color/offwhite"
+            android:background="@color/offwhite"
             android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/msgBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:ems="10"
@@ -126,7 +123,6 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Send button -->
     <ImageView
         android:id="@+id/sendBtn"
         android:layout_width="45dp"

@@ -6,31 +6,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
+    android:background="@drawable/splash_bg"
     tools:context=".Activities.PhoneActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:srcCompat="@drawable/mobile_auth"
-        app:layout_constraintTop_toBottomOf="@id/emailCard"/>
+<!--    <ImageView-->
+<!--        android:id="@+id/imageView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="12dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:srcCompat="@drawable/let_stalkbg"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/emailCard"/>-->
 
     <TextView
         android:id="@+id/phoneLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="50dp"
         android:text="@string/verify_your_phone_number"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -39,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/app_will_send_sms_to_verify_the_phone_number"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="@+id/phoneLabel"
         app:layout_constraintStart_toStartOf="@+id/phoneLabel"
@@ -61,7 +62,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:orientation="vertical">
 
             <EditText
@@ -72,13 +73,14 @@
                 android:ems="10"
                 android:inputType="phone"
                 android:hint="@string/enter_your_phone_number"
-                android:padding="15dp" />
+                android:padding="10dp" />
 
             <Button
                 android:id="@+id/continueBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:backgroundTint="@color/coralPink"
                 android:text="@string/continuee" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -119,7 +121,7 @@
                 android:hint="Enter your email"
                 android:inputType="textEmailAddress"
                 android:background="@drawable/textbox_outline"
-                android:padding="15dp" />
+                android:padding="5dp" />
 
             <EditText
                 android:id="@+id/passwordBox"
@@ -128,14 +130,15 @@
                 android:hint="Enter your password"
                 android:inputType="textPassword"
                 android:background="@drawable/textbox_outline"
-                android:padding="15dp"
+                android:padding="5dp"
                 android:layout_marginTop="8dp"/>
 
             <Button
                 android:id="@+id/emailLoginBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Login / Sign Up with Email"
+                android:text="Login /Sign Up with Email"
+                android:backgroundTint="@color/coralPink"
                 android:layout_marginTop="10dp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

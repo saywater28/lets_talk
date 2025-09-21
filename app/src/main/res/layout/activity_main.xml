@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:elevation="30dp"
-    tools:context=".Activities.MainActivity">
+    tools:context=".Activities.MainActivity"
+    android:background="@drawable/mainbg">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
@@ -15,10 +16,10 @@
         android:title="Let's Talk"
         app:titleTextColor="@color/black"
         app:titleTextAppearance="@color/black"
-        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:outlineAmbientShadowColor="@color/white"
         app:menu="@menu/top_app_bar" />
 
 
@@ -27,9 +28,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:itemTextColor="@color/white"
+        app:itemTextAppearanceActiveBoldEnabled="true"
+        android:foregroundGravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/topAppBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/demo_light_transparent"
         app:menu="@menu/menu" />
 
     <com.cooltechworks.views.shimmer.ShimmerRecyclerView
@@ -38,10 +43,10 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statusList"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recentChats"
         tools:listitem="@layout/row_conversation"
         app:shimmer_demo_child_count="10"
         app:shimmer_demo_grid_child_count="2"
@@ -49,23 +54,55 @@
         app:shimmer_demo_layout_manager_type="linear_vertical"
         app:shimmer_demo_angle="20"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/statusList"
+    <LinearLayout
+        android:id="@+id/recentChats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="28dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topAppBar" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomNavigationView"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView">
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/gray"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/statusList" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Recent Chats"
+            android:textColor="@color/splash_main"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <SearchView
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:outlineAmbientShadowColor="@color/white"
+            />
+
+    </LinearLayout>
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/statusList"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/topAppBar" />-->
+
+<!--    <View-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        android:background="@color/gray"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/recyclerView"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/statusList" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -92,8 +92,8 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        binding.statusList.setLayoutManager(layoutManager);
-        binding.statusList.setAdapter(statusAdapter);
+//        binding.statusList.setLayoutManager(layoutManager);
+//        binding.statusList.setAdapter(statusAdapter);
 
         binding.recyclerView.setAdapter(usersAdapter);
 
@@ -164,11 +164,12 @@ public class MainActivity extends AppCompatActivity {
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     startActivityForResult(intent, 75);
                     return true;
-                } else if (itemId == R.id.settings) {
-                    Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                    startActivity(intent);
-                    return true;
                 }
+//                else if (itemId == R.id.settings) {
+//                    Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+//                    startActivity(intent);
+//                    return true;
+//                }
                 return false;
             }
         });
@@ -256,10 +257,12 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.search) {
             Toast.makeText(this, "Search clicked.", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (id == R.id.settings) {
-            Toast.makeText(this, "Settings clicked.", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (id == R.id.group) {
+        }
+//        else if (id == R.id.settings) {
+//            Toast.makeText(this, "Settings clicked.", Toast.LENGTH_SHORT).show();
+//            return true;
+//        }
+        else if (id == R.id.group) {
             Toast.makeText(this, "Groups clicked.", Toast.LENGTH_SHORT).show();
             return true;
         } else if (id == R.id.invite) {
