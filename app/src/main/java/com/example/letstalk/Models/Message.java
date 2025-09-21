@@ -1,6 +1,7 @@
 package com.example.letstalk.Models;
 
 import com.google.firebase.database.Exclude;
+
 import java.util.Map;
 
 public class Message {
@@ -11,6 +12,7 @@ public class Message {
     private int feeling = -1;
 
     private Map<String, String> translations;
+    private boolean isDeleted;
 
     public Message() {}
 
@@ -43,6 +45,9 @@ public class Message {
         if (translations != null && translations.containsKey(preferredLang)) {
             return translations.get(preferredLang);
         }
-        return messageText; // fallback
+        return messageText != null ? messageText : "";
     }
+
+    public boolean isDeleted() { return isDeleted; }
+    public void setDeleted(boolean deleted) { isDeleted = deleted; }
 }

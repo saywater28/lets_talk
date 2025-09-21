@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        EdgeToEdge.enable(this);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         users = new ArrayList<>();
         userStatuses = new ArrayList<>();
         filteredUsers = new ArrayList<>();
-        usersAdapter = new UsersAdapter(this, filteredUsers);
+//        usersAdapter = new UsersAdapter(this, filteredUsers);
         binding.recyclerView.setAdapter(usersAdapter);
 
         // ✅ Safe null check for UID

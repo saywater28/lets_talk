@@ -1,7 +1,10 @@
 package com.example.letstalk.Adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,19 +32,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final int ITEM_RECEIVE = 2;
     private final String senderRoom;
     private final String receiverRoom;
+    private String preferredLang;
 
-    // 👇 keep track of preferred language
-    private String preferredLang = "en";
+    public MessagesAdapter(Context context, ArrayList<Message> messages,
+                           String preferredLang, String senderRoom, String receiverRoom){
+        this.context = context;
+        this.messages = messages;
+        this.preferredLang = preferredLang;
+        this.senderRoom = senderRoom;
+        this.receiverRoom = receiverRoom;
+    }
 
     public void setPreferredLang(String lang) {
         this.preferredLang = lang;
-    }
-
-    public MessagesAdapter(Context context, ArrayList<Message> messages, ArrayList<String> messageKeys, String senderRoom, String receiverRoom){
-        this.context = context;
-        this.messages = messages;
-        this.senderRoom = senderRoom;
-        this.receiverRoom = receiverRoom;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -59,7 +63,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public int getItemViewType(int position) {
         Message message = messages.get(position);
-        if (Objects.equals(FirebaseAuth.getInstance().getUid(), message.getSenderId())){
+        if (Objects.equals(FirebaseAuth.getInstance().getUid(), message.getSenderId())) {
             return ITEM_SENT;
         } else {
             return ITEM_RECEIVE;
@@ -70,7 +74,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Message message = messages.get(position);
 
-        // Reaction setup
+        String displayText = message.isDeleted()
+                ? "This message was deleted"
+                : message.getDisplayMessage(preferredLang);
+
         int[] reactions = new int[]{
                 R.drawable.ic_fb_like,
                 R.drawable.ic_fb_love,
@@ -97,41 +104,39 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             if (senderRoom != null && receiverRoom != null && message.getMessageId() != null) {
                 FirebaseDatabase.getInstance().getReference()
-                        .child("chats")
-                        .child(senderRoom)
-                        .child("messages")
-                        .child(message.getMessageId())
-                        .setValue(message);
+                        .child("chats").child(senderRoom).child("messages")
+                        .child(message.getMessageId()).setValue(message);
 
                 FirebaseDatabase.getInstance().getReference()
-                        .child("chats")
-                        .child(receiverRoom)
-                        .child("messages")
-                        .child(message.getMessageId())
-                        .setValue(message);
+                        .child("chats").child(receiverRoom).child("messages")
+                        .child(message.getMessageId()).setValue(message);
             }
             return true;
         });
-
-        // 👇 always get dynamic displayMessage
-        String displayText = message.getDisplayMessage(preferredLang);
-        if (displayText == null || displayText.isEmpty()) {
-            displayText = message.getMessageText(); // fallback
-        }
 
         if (holder instanceof SentViewHolder) {
             SentViewHolder viewHolder = (SentViewHolder) holder;
             viewHolder.binding.message.setText(displayText);
 
-            if (message.getFeeling() >= 0) {
-                viewHolder.binding.feeling.setImageResource(reactions[message.getFeeling()]);
-                viewHolder.binding.feeling.setVisibility(View.VISIBLE);
-            } else {
+            if (message.isDeleted()) {
+                viewHolder.binding.message.setTypeface(null, Typeface.ITALIC);
+                viewHolder.binding.message.setTextColor(Color.GRAY);
                 viewHolder.binding.feeling.setVisibility(View.GONE);
+            } else {
+                viewHolder.binding.message.setTypeface(null, Typeface.NORMAL);
+                viewHolder.binding.message.setTextColor(Color.BLACK);
+
+                if (message.getFeeling() >= 0) {
+                    viewHolder.binding.feeling.setImageResource(reactions[message.getFeeling()]);
+                    viewHolder.binding.feeling.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.binding.feeling.setVisibility(View.GONE);
+                }
             }
 
             viewHolder.binding.message.setOnTouchListener((v, motionEvent) -> {
-                popup.onTouch(v, motionEvent);
+                if (!message.isDeleted())
+                    popup.onTouch(v, motionEvent);
                 return false;
             });
 
@@ -139,15 +144,25 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ReceiveViewHolder viewHolder = (ReceiveViewHolder) holder;
             viewHolder.binding.message.setText(displayText);
 
-            if (message.getFeeling() >= 0) {
-                viewHolder.binding.feeling.setImageResource(reactions[message.getFeeling()]);
-                viewHolder.binding.feeling.setVisibility(View.VISIBLE);
-            } else {
+            if (message.isDeleted()) {
+                viewHolder.binding.message.setTypeface(null, Typeface.ITALIC);
+                viewHolder.binding.message.setTextColor(Color.GRAY);
                 viewHolder.binding.feeling.setVisibility(View.GONE);
+            } else {
+                viewHolder.binding.message.setTypeface(null, Typeface.NORMAL);
+                viewHolder.binding.message.setTextColor(Color.BLACK);
+
+                if (message.getFeeling() >= 0) {
+                    viewHolder.binding.feeling.setImageResource(reactions[message.getFeeling()]);
+                    viewHolder.binding.feeling.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.binding.feeling.setVisibility(View.GONE);
+                }
             }
 
             viewHolder.binding.message.setOnTouchListener((v, motionEvent) -> {
-                popup.onTouch(v, motionEvent);
+                if (!message.isDeleted())
+                    popup.onTouch(v, motionEvent);
                 return false;
             });
         }

@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -18,17 +19,14 @@ import com.example.letstalk.Models.Message;
 import com.example.letstalk.R;
 import com.example.letstalk.databinding.ActivityChatBinding;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 import com.google.mlkit.nl.translate.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -45,7 +43,7 @@ public class ChatActivity extends AppCompatActivity {
     private String senderUid, receiverUid;
 
     private Translator translator;
-    private String chatLang = "en"; // default
+    private String chatLang = "en";   // 👈 will be set from DB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +56,13 @@ public class ChatActivity extends AppCompatActivity {
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Toolbar setup
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
         ImageView backArrow = findViewById(R.id.backArrow);
         TextView personName = findViewById(R.id.personName);
 
@@ -72,7 +74,6 @@ public class ChatActivity extends AppCompatActivity {
         if (name != null) {
             personName.setText(name);
             if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(name);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
@@ -84,21 +85,15 @@ public class ChatActivity extends AppCompatActivity {
 
         messages = new ArrayList<>();
         messageKeys = new ArrayList<>();
-        adapter = new MessagesAdapter(this, messages, messageKeys, senderRoom, receiverRoom);
-        adapter.setPreferredLang(chatLang);
-        adapter.notifyDataSetChanged();
+        adapter = new MessagesAdapter(this, messages, "en", senderRoom, receiverRoom);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(adapter);
 
         database = FirebaseDatabase.getInstance().getReference();
+        fetchLanguagesAndSetup();
 
-        // Initialize translator first, then load messages
-        setupTranslator(senderLang, receiverLang);
-
-        // Send button
         binding.sendBtn.setOnClickListener(v -> sendMessage());
 
-        // Optional: handle IME send
         binding.msgBox.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND) {
                 binding.sendBtn.performClick();
@@ -106,6 +101,31 @@ public class ChatActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    private void fetchLanguagesAndSetup() {
+        database.child("users").child(senderUid).child("preferredLanguage")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) senderLang = mapToCode(snapshot.getValue(String.class));
+                        setupTranslator(senderLang, chatLang);
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError error) {}
+                });
+
+        database.child("users").child(receiverUid).child("preferredLanguage")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            receiverLang = mapToCode(snapshot.getValue(String.class));
+                            chatLang = receiverLang;   // 👈 load messages in receiver's preferred language
+                            adapter.setPreferredLang(chatLang);
+                            adapter.notifyDataSetChanged();
+                            setupTranslator(senderLang, chatLang);
+                        }
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError error) {}
+                });
     }
 
     private void setupTranslator(String sourceLangCode, String targetLangCode) {
@@ -116,7 +136,7 @@ public class ChatActivity extends AppCompatActivity {
         translator = Translation.getClient(options);
 
         translator.downloadModelIfNeeded()
-                .addOnSuccessListener(aVoid -> loadMessages()) // safe: model ready
+                .addOnSuccessListener(aVoid -> loadMessages())
                 .addOnFailureListener(Throwable::printStackTrace);
     }
 
@@ -139,13 +159,10 @@ public class ChatActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         binding.recyclerView.scrollToPosition(messages.size() - 1);
 
-                        // ✅ Only translate if translation not already available
-                        if (!senderLang.equals(chatLang) && translator != null) {
+                        if (translator != null) {
                             for (Message message : messages) {
                                 if (message.getTranslations() != null &&
-                                        message.getTranslations().containsKey(chatLang)) {
-                                    continue; // Already translated, skip
-                                }
+                                        message.getTranslations().containsKey(chatLang)) continue;
 
                                 String originalMessage = message.getMessageText();
                                 if (originalMessage != null && !originalMessage.isEmpty()) {
@@ -158,7 +175,6 @@ public class ChatActivity extends AppCompatActivity {
                                                 translations.put(chatLang, translatedText);
                                                 message.setTranslations(translations);
 
-                                                // update Firebase
                                                 String messageId = message.getMessageId();
                                                 if (messageId != null) {
                                                     database.child("chats").child(senderRoom)
@@ -179,9 +195,7 @@ public class ChatActivity extends AppCompatActivity {
                             }
                         }
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {}
+                    @Override public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
 
@@ -197,7 +211,6 @@ public class ChatActivity extends AppCompatActivity {
         Message message = new Message(messageTxt, senderUid, timestamp);
         message.setMessageId(messageId);
 
-        // Add immediately to list so UI shows instantly
         messages.add(message);
         messageKeys.add(messageId);
         adapter.notifyItemInserted(messages.size() - 1);
@@ -209,7 +222,6 @@ public class ChatActivity extends AppCompatActivity {
         senderRef.setValue(message);
         receiverRef.setValue(message);
 
-        // Translate asynchronously
         if (!senderLang.equals(receiverLang) && translator != null) {
             translator.translate(messageTxt)
                     .addOnSuccessListener(translatedText -> {
@@ -260,10 +272,143 @@ public class ChatActivity extends AppCompatActivity {
             profileIntent.putExtra("profileImage", getIntent().getStringExtra("profileImage"));
             startActivity(profileIntent);
             return true;
-        } else if (id == R.id.action_delete_chat) return true;
-        else if (id == R.id.action_lang_selection) showLanguageDialog();
+        } else if (id == R.id.action_delete_chat) {
+            showDeleteMessageOptions();
+            return true;
+        } else if (id == R.id.action_delete_all) {
+            showDeleteAllMessagesOptions();
+            return true;            
+        } else if (id == R.id.action_lang_selection) showLanguageDialog();
         return super.onOptionsItemSelected(item);
     }
+
+    private void showDeleteAllMessagesOptions() {
+        String[] options = {"Delete all for me", "Delete all for everyone"};
+
+        new AlertDialog.Builder(this)
+                .setTitle("Delete All Messages")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        deleteAllForMe();
+                    } else {
+                        deleteAllForEveryone();
+                    }
+                })
+                .show();
+    }
+
+    private void deleteAllForMe() {
+        FirebaseDatabase.getInstance().getReference()
+                .child("chats")
+                .child(senderRoom)
+                .child("messages")
+                .removeValue();
+
+        messages.clear();
+        adapter.notifyDataSetChanged();
+
+        Toast.makeText(this, "All messages deleted for me", Toast.LENGTH_SHORT).show();
+    }
+
+    private void deleteAllForEveryone() {
+        for (Message m : messages) {
+            if (m.getMessageId() != null) {
+                database.child("chats").child(senderRoom)
+                        .child("messages").child(m.getMessageId())
+                        .child("deleted").setValue(true);
+
+                database.child("chats").child(receiverRoom)
+                        .child("messages").child(m.getMessageId())
+                        .child("deleted").setValue(true);
+
+                m.setDeleted(true);
+            }
+        }
+
+        messages.clear();
+        adapter.notifyDataSetChanged();
+        Toast.makeText(this, "All messages deleted for everyone", Toast.LENGTH_SHORT).show();
+    }
+
+
+
+    private void showDeleteMessageOptions() {
+        if (messages.isEmpty()) {
+            Toast.makeText(this, "No messages to delete", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] options = {"Delete for me", "Delete for everyone"};
+
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Message")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        showDeleteForMeDialog();
+                    } else {
+                        showDeleteForEveryoneDialog();
+                    }
+                })
+                .show();
+    }
+
+    private void showDeleteForMeDialog() {
+        String[] msgArray = new String[messages.size()];
+        for (int i = 0; i < messages.size(); i++) {
+            msgArray[i] = messages.get(i).getMessageText();
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Select message to delete (for me)")
+                .setItems(msgArray, (dialog, which) -> {
+                    String msgId = messages.get(which).getMessageId();
+
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("chats")
+                            .child(senderRoom)
+                            .child("messages")
+                            .child(msgId)
+                            .removeValue();
+
+                    messages.remove(which);
+                    adapter.notifyItemRemoved(which);
+
+                    Toast.makeText(this, "Deleted for me", Toast.LENGTH_SHORT).show();
+                })
+                .show();
+    }
+
+    private void showDeleteForEveryoneDialog() {
+        String[] msgArray = new String[messages.size()];
+        for (int i = 0; i < messages.size(); i++) {
+            msgArray[i] = messages.get(i).getMessageText();
+        }
+
+        // Inside showDeleteForEveryoneDialog()
+        new AlertDialog.Builder(this)
+                .setTitle("Select message to delete (for everyone)")
+                .setItems(msgArray, (dialog, which) -> {
+                    String msgId = messages.get(which).getMessageId();
+
+                    if (msgId != null) {
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("chats").child(senderRoom).child("messages")
+                                .child(msgId).child("deleted").setValue(true);
+
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("chats").child(receiverRoom).child("messages")
+                                .child(msgId).child("deleted").setValue(true);
+                    }
+
+                    messages.get(which).setDeleted(true);
+                    adapter.notifyItemChanged(which);
+
+                    Toast.makeText(this, "Deleted for everyone", Toast.LENGTH_SHORT).show();
+                })
+                .show();
+    }
+
+
 
     private void showLanguageDialog() {
         final String[] languages = {"English", "हिन्दी", "Español", "Français"};
@@ -273,15 +418,13 @@ public class ChatActivity extends AppCompatActivity {
                 .setTitle("Choose Language")
                 .setItems(languages, (dialog, which) -> {
                     chatLang = langCodes[which];
-                    adapter.setPreferredLang(chatLang); // ✅ change adapter language
+                    adapter.setPreferredLang(chatLang);
                     adapter.notifyDataSetChanged();
-
-                    setupTranslator(senderLang, chatLang); // prepare translator for new target
+                    setupTranslator(senderLang, chatLang);
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
-
 
     private String getMlKitLangCode(String isoCode) {
         switch (isoCode) {
@@ -289,6 +432,20 @@ public class ChatActivity extends AppCompatActivity {
             case "es": return TranslateLanguage.SPANISH;
             case "fr": return TranslateLanguage.FRENCH;
             default: return TranslateLanguage.ENGLISH;
+        }
+    }
+
+    private String mapToCode(String lang) {
+        if (lang == null) return "en";
+        switch (lang.toLowerCase()) {
+            case "english": return "en";
+            case "हिन्दी":
+            case "hindi": return "hi";
+            case "español":
+            case "spanish": return "es";
+            case "français":
+            case "french": return "fr";
+            default: return "en";
         }
     }
 }

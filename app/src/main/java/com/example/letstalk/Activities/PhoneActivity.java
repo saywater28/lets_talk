@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.letstalk.R;
 import com.example.letstalk.databinding.ActivityPhoneBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,9 +35,10 @@ public class PhoneActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-        // If already logged in, check if profile exists
-        if (auth.getCurrentUser() != null) {
-            checkUserProfile(auth.getCurrentUser().getUid());
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null) {
+            checkUserProfile(currentUser.getUid());
+            return;
         }
 
         binding.phoneBox.requestFocus();
@@ -83,21 +85,13 @@ public class PhoneActivity extends AppCompatActivity {
                     });
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
     }
 
-    // ✅ Check if user profile exists in Firebase
     private void checkUserProfile(String uid) {
         usersRef.child(uid).get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult().exists()) {
-                // Profile already exists → go to MainActivity
                 goToMain();
             } else {
-                // First-time login → go to SetupProfileActivity
                 goToSetupProfile();
             }
         });
