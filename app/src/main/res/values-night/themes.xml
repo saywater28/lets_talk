@@ -1,8 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <!-- Base application theme. -->
-    <style name="Base.Theme.LETSTALK" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-         <item name="colorPrimary">@color/white</item>
-        <item name="colorOnPrimary">@color/purple</item>
+    <style name="Theme.LetsTalk" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/black</item>
+
+        <!-- Background -->
+        <item name="android:windowBackground">@color/chat_bg_dark</item>
+
+        <!-- Chat specific -->
+        <item name="chatBackground">@color/chat_bg_dark</item>
+        <item name="chatTextColor">@color/chat_text_dark</item>
     </style>
+
 </resources>

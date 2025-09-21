@@ -5,11 +5,36 @@
     <color name="white">#FFFFFFFF</color>
     <color name="greenDark">#1AA044</color>
     <color name="greenLight">#4CAF50</color>
-    <color name="purple">#673AB7</color>
+    <color name="purple_200">#997BD7</color>
+    <color name="purple">#673AB8</color>
+    <color name="purple_500">#673AB7</color>
+    <color name="purple_700">#480FA2</color>
     <color name="orange">#F44336</color>
     <color name="pink">#E91E63</color>
     <color name="yellow">#FFEB3B</color>
     <color name="blue">#2196F3</color>
     <color name="lightBlue">#03A9F4</color>
     <color name="offwhite">#E6E6E6</color>
+        <!-- Light Theme Colors -->
+        <color name="chat_bg_light">#FFFFFF</color> <!-- white background -->
+        <color name="chat_text_light">#000000</color> <!-- black text -->
+
+        <!-- Dark Theme Colors -->
+        <color name="chat_bg_dark">#121212</color> <!-- dark gray background -->
+        <color name="chat_text_dark">#FFFFFF</color> <!-- white text -->
+
+    <color name="splash_bg_primary">#4C3A5A</color>
+    <color name="splash_bg_accent">#6A547C</color>
+    <color name="splash_overlay_pink">#EFB9B9</color>
+
+    <color name="splash_title">#FFFFFF</color>
+    <color name="splash_subtitle">#E3D7F5</color>
+
+    <color name="splash_button_bg">#F17C7C</color>
+    <color name="splash_button_text">#FFFFFF</color>
+    <color name="purpleBackground">#5E4B8B</color>
+    <color name="coralPink">#FF6F61</color>
+
+
+
 </resources>

@@ -2,8 +2,7 @@ package com.example.letstalk.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,6 +16,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private DatabaseReference usersRef;
+    private Button startMsgBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,20 +25,21 @@ public class SplashActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         usersRef = FirebaseDatabase.getInstance().getReference("users");
+        startMsgBtn = findViewById(R.id.startMsgBtn);
 
-        // Small delay so splash screen is visible
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        // When user clicks "Start Messaging"
+        startMsgBtn.setOnClickListener(v -> {
             FirebaseUser currentUser = auth.getCurrentUser();
 
             if (currentUser != null) {
-                // User logged in → check if profile exists
+                // User logged in → check profile
                 checkUserProfile(currentUser.getUid());
             } else {
-                // No logged in user → go to login/phone screen
+                // No user logged in → go to login screen
                 startActivity(new Intent(SplashActivity.this, PhoneActivity.class));
                 finish();
             }
-        }, 2000); // 2 second splash
+        });
     }
 
     private void checkUserProfile(String uid) {

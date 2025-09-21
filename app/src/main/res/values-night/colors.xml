@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="splash_bg_primary">#2C2233</color>
+    <color name="splash_bg_accent">#4A3C57</color>
+    <color name="splash_overlay_pink">#C97C7C</color>
+
+    <color name="splash_title">#FFFFFF</color>
+    <color name="splash_subtitle">#BFAED8</color>
+
+    <color name="splash_button_bg">#D46262</color>
+    <color name="splash_button_text">#FFFFFF</color>
+</resources>
