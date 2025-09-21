@@ -53,6 +53,8 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_marginTop="30dp"
             app:menu="@menu/chat_menu"
+            app:tint="@color/white"
+            app:titleTextColor="@color/white"
             app:navigationIconTint="@android:color/white"
             app:layout_constraintStart_toEndOf="@id/personName"
             app:layout_constraintEnd_toEndOf="parent"
