@@ -10,6 +10,7 @@
     <string name="please_set_your_name_and_an_optional_profile_image">Please set your name and a profile image.</string>
     <string name="profile_info">Profile Info</string>
     <string name="setup_profile">SETUP PROFILE</string>
+    <string name="tap_to_chat">Tap to chat</string>
 
     <string-array name="languages">
         <item>English</item>

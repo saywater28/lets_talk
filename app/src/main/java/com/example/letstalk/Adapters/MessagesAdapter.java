@@ -3,6 +3,7 @@ package com.example.letstalk.Adapters;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -118,6 +120,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             SentViewHolder viewHolder = (SentViewHolder) holder;
             viewHolder.binding.message.setText(displayText);
 
+            long timeObj = message.getTimestamp();
+            if (timeObj < 1000000000000L) timeObj *= 1000;
+            String time = DateFormat.format("hh:mm a", new Date(timeObj)).toString();
+            viewHolder.binding.msgTime.setText(time);
+
             if (message.isDeleted()) {
                 viewHolder.binding.message.setTypeface(null, Typeface.ITALIC);
                 viewHolder.binding.message.setTextColor(Color.GRAY);
@@ -143,6 +150,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else if (holder instanceof ReceiveViewHolder) {
             ReceiveViewHolder viewHolder = (ReceiveViewHolder) holder;
             viewHolder.binding.message.setText(displayText);
+
+            long timeObj = message.getTimestamp();
+            if (timeObj < 1000000000000L) timeObj *= 1000;
+            String time = DateFormat.format("hh:mm a", new Date(timeObj)).toString();
+            viewHolder.binding.msgTime.setText(time);
 
             if (message.isDeleted()) {
                 viewHolder.binding.message.setTypeface(null, Typeface.ITALIC);

@@ -57,7 +57,6 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         Toolbar toolbar = binding.toolbar;
-        setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -93,6 +92,15 @@ public class ChatActivity extends AppCompatActivity {
         fetchLanguagesAndSetup();
 
         binding.sendBtn.setOnClickListener(v -> sendMessage());
+
+        binding.recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            binding.recyclerView.post(() -> {
+                if (adapter.getItemCount() > 0) {
+                    binding.recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
+                }
+            });
+        });
+
 
         binding.msgBox.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND) {

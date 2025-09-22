@@ -7,14 +7,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/chatbg"
+    android:fitsSystemWindows="true"
     tools:context=".Activities.ChatActivity">
 
     <!-- Top Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="?actionBarSize"
+        android:foregroundGravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -26,7 +27,6 @@
             android:padding="4dp"
             app:srcCompat="@drawable/left_white"
             android:contentDescription="Back"
-            android:layout_marginTop="30dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -40,7 +40,6 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="30dp"
             app:layout_constraintStart_toEndOf="@id/backArrow"
             app:layout_constraintEnd_toStartOf="@+id/toolbar"
             app:layout_constraintTop_toTopOf="parent"
@@ -51,7 +50,6 @@
             android:id="@+id/toolbar"
             android:layout_width="wrap_content"
             android:layout_height="?attr/actionBarSize"
-            android:layout_marginTop="30dp"
             app:menu="@menu/chat_menu"
             app:tint="@color/white"
             app:titleTextColor="@color/white"
@@ -75,37 +73,38 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="14dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:cardCornerRadius="30dp"
+        android:backgroundTint="@color/splash_title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/sendBtn"
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:layout_marginLeft="10dp"
-            android:backgroundTint="@color/offwhite"
-            android:background="@color/offwhite"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
             android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/msgBox"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:ems="10"
                 android:gravity="center_vertical"
                 android:hint="Type a message..."
-                android:inputType="text"
-                android:singleLine="true"
+                android:textColor="@color/splash_bg_primary"
+                android:inputType="textMultiLine"
+                android:maxLines="4"
+                android:scrollbars="vertical"
                 android:imeOptions="actionSend"
-                android:padding="2dp"
+                android:padding="6dp"
                 android:textSize="18sp" />
 
             <ImageView
@@ -128,8 +127,8 @@
 
     <ImageView
         android:id="@+id/sendBtn"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="?actionBarSize"
+        android:layout_height="?actionBarSize"
         android:layout_marginEnd="2dp"
         android:background="@drawable/circle_green"
         android:padding="10dp"
